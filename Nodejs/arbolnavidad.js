@@ -16,7 +16,7 @@ bot.on('message', (msg) => {
     SalvarChat(msg);
     var chatId = msg.chat.id;
     var Mensaje = msg.text.toLowerCase();
-    if (Mensaje == "ayuda" || Mensaje == "a") {
+    if (Mensaje == "ayuda" || Mensaje == "/\ayuda" || Mensaje == "a") {
       MensajeAyuda(chatId)
     } else if (Mensaje == "inicio" || Mensaje == "/\start") {
       MensajeBienbenida(chatId);
@@ -39,27 +39,31 @@ function SalvarChat(Mensaje) {
 }
 
 function MensajeBienbenida(ID) {
-  bot.sendMessage(ID, "Bienbenido al Bot del Arbol de Navidad 2020 de ALSW")
-    .then(
-      bot.sendMessage(ID, "Si es tu primera vez por aqui entra a:"))
-    .then(
-      bot.sendMessage(ID, "https://nocheprogramacion.com/arbolnavidad"))
-    .then(
-      bot.sendMessage(ID, "o usa el comando Ayuda"))
-    .then(
-      bot.sendMessage(ID, "Feliz Navidad de ALSW"));
+  var Mensaje = "*Bienbenido* al Bot del Arbol de Navidad 2020 *ALSW* \n";
+  Mensaje += "Si es tu primera vez por aqui entra a: \n";
+  Mensaje += "https://nocheprogramacion.com/arbolnavidad \n";
+  Mensaje += "o usa el comando \n /Ayuda \n"
+  Mensaje += "*Feliz Navidad de ALSW*";
+  bot.sendMessage(ID, Mensaje, {
+    parse_mode: "Markdown"
+  });
 }
 
 function MensajeAyuda(ID) {
-  bot.sendMessage(ID, "El Arbol tiene las siquientes funcciones:")
-    .then(
-      bot.sendMessage(ID, "Foto - Pedir una foto del arbol actual"))
-    .then(
-      bot.sendMessage(ID, "Codigo - Codigo fuente del proyecto"))
-    .then(
-      bot.sendMessage(ID, "Ayuda - Para pedir Ayuda"))
-    .then(
-      bot.sendMessage(ID, "Si necesitas mas info entra en:"))
-    .then(
-      bot.sendMessage(ID, "https://nocheprogramacion.com/arbolnavidad"));
+  bot.sendMessage(ID, "", {
+    parse_mode: "Markdown"
+  });
+  // bot.sendMessage(ID,"<b>bold</b> \n <i>italic</i> \n <em>italic with em</em> \n <a href=\"http://www.example.com/\">inline URL</a> \n <code>inline fixed-width code</code> \n <pre>pre-formatted fixed-width code block</pre>" ,{parse_mode : "HTML"});
+  //
+  // bot.sendMessage(ID, "El Arbol tiene las siquientes funcciones:")
+  //   .then(
+  //     bot.sendMessage(ID, "Foto - Pedir una foto del arbol actual"))
+  //   .then(
+  //     bot.sendMessage(ID, "Codigo - Codigo fuente del proyecto"))
+  //   .then(
+  //     bot.sendMessage(ID, "Ayuda - Para pedir Ayuda"))
+  //   .then(
+  //     bot.sendMessage(ID, "Si necesitas mas info entra en:"))
+  //   .then(
+  //     bot.sendMessage(ID, "https://nocheprogramacion.com/arbolnavidad"));
 }
