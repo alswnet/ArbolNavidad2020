@@ -20,8 +20,12 @@ bot.on('message', (msg) => {
       MensajeAyuda(chatId)
     } else if (Mensaje == "inicio" || Mensaje == "/\start") {
       MensajeBienbenida(chatId);
+    } else if (Mensaje == "nocheprogramacion" || Mensaje == "tutorial" || Mensaje == "\/tutorial") {
+      bot.sendMessage(chatId, 'Tutoriales: https://nocheprogramacion.com');
+    } else if (Mensaje == "programacionnews" || Mensaje == "noticias" || Mensaje == "\/noticias") {
+      bot.sendMessage(chatId, 'Noticas: https://programacion.news');
     } else {
-      bot.sendMessage(chatId, 'No entiendo intenta con Ayuda o entra a https://nocheprogramacion.com/arbolnavidad');
+      bot.sendMessage(chatId, 'No entiendo intenta con /ayuda o entra a https://nocheprogramacion.com/arbolnavidad');
     }
   }
 });
@@ -42,7 +46,8 @@ function MensajeBienbenida(ID) {
   var Mensaje = "*Bienbenido* al Bot del Arbol de Navidad 2020 *ALSW* \n";
   Mensaje += "Si es tu primera vez por aqui entra a: \n";
   Mensaje += "https://nocheprogramacion.com/arbolnavidad \n";
-  Mensaje += "o usa el comando \n /Ayuda \n"
+  Mensaje += "o usa el comando \n";
+  Mensaje += "/ayuda \n";
   Mensaje += "*Feliz Navidad de ALSW*";
   bot.sendMessage(ID, Mensaje, {
     parse_mode: "Markdown"
@@ -50,20 +55,21 @@ function MensajeBienbenida(ID) {
 }
 
 function MensajeAyuda(ID) {
-  bot.sendMessage(ID, "", {
+  var Mensaje = "El *Bot* tiene los siquientes comandos:\n"
+  Mensaje += "/start  Mensaje de Bienbenida del Bot\n";
+  Mensaje += "/foto Pedir foto del arbol actual\n";
+  Mensaje += "/color {COLOR} Cambiar el color de arbol a un color de la lista\n";
+  Mensaje += "/listacolor Muestra lista de colores para el arbol\n";
+  Mensaje += "/tutorial Pedir sitio web de *Tutoriales* de ALSW\n";
+  Mensaje += "/noticias Pedir sitio web de *Noticias* de ALSW\n";
+  Mensaje += "/discord Pedir Comunidad de *Discord* de ALSW\n"
+  Mensaje += "/codigo Pedir codigo del proyecto\n";
+  Mensaje += "/web Pedir pagina Web del proyectyo\n";
+  Mensaje += "/video Pedir video del proyecto\n";
+  Mensaje += "/error Pedir sitio web para reportar errores\n"
+  Mensaje += "/ayuda  Para pedir ayuda de los comandos\n";
+
+  bot.sendMessage(ID, Mensaje, {
     parse_mode: "Markdown"
   });
-  // bot.sendMessage(ID,"<b>bold</b> \n <i>italic</i> \n <em>italic with em</em> \n <a href=\"http://www.example.com/\">inline URL</a> \n <code>inline fixed-width code</code> \n <pre>pre-formatted fixed-width code block</pre>" ,{parse_mode : "HTML"});
-  //
-  // bot.sendMessage(ID, "El Arbol tiene las siquientes funcciones:")
-  //   .then(
-  //     bot.sendMessage(ID, "Foto - Pedir una foto del arbol actual"))
-  //   .then(
-  //     bot.sendMessage(ID, "Codigo - Codigo fuente del proyecto"))
-  //   .then(
-  //     bot.sendMessage(ID, "Ayuda - Para pedir Ayuda"))
-  //   .then(
-  //     bot.sendMessage(ID, "Si necesitas mas info entra en:"))
-  //   .then(
-  //     bot.sendMessage(ID, "https://nocheprogramacion.com/arbolnavidad"));
 }
