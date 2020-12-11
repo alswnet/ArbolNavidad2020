@@ -1,0 +1,29 @@
+{
+  "name": "arbolnavidad2020",
+  "version": "1.0.0",
+  "description": "Arbol de navidad controlado por chatbot",
+  "main": "arbolnavidad.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alswnet/ArbolNavidad2020.git"
+  },
+  "keywords": [
+    "arduino",
+    "navidad",
+    "iot",
+    "chatbot"
+  ],
+  "author": "ChepeCarlos",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alswnet/ArbolNavidad2020/issues"
+  },
+  "homepage": "https://github.com/alswnet/ArbolNavidad2020#readme",
+  "dependencies": {
+    "node-telegram-bot-api": "^0.50.0",
+    "serialport": "^9.0.3"
+  }
+}
