@@ -17,7 +17,12 @@ bot.on('message', (msg) => {
     SalvarChat(msg);
     var chatId = msg.chat.id;
     var Mensaje = msg.text.toLowerCase();
-    if (EstaTexto(Mensaje, "listacolor") || Mensaje == "/\listacolor") {
+
+    if (EstaTexto(Mensaje, "foto") || Mensaje == "/\foto") {
+      MensajeFoto(chatId);
+    } else if (EstaTexto(Mensaje, "estado") || Mensaje == "/\estado") {
+      MensajeEstado(chatId);
+    } else if (EstaTexto(Mensaje, "listacolor") || Mensaje == "/\listacolor") {
       MensajeListaColor(chatId);
     } else if (EstaTexto(Mensaje, "color") || Mensaje == "/\color") {
       CambiarColor(chatId, Mensaje);
@@ -25,6 +30,16 @@ bot.on('message', (msg) => {
       MensajeAyuda(chatId)
     } else if (EstaTexto(Mensaje, "inicio") || Mensaje == "/\start") {
       MensajeBienbenida(chatId);
+    } else if (EstaTexto(Mensaje, "codigo") || Mensaje == "/\codigo") {
+      bot.sendMessage(chatId, 'Codigo fuente: https://github.com/alswnet/ArbolNavidad2020');
+    } else if (EstaTexto(Mensaje, "web") || Mensaje == "/\web") {
+      bot.sendMessage(chatId, 'Pagina web del proyecto: https://nocheprogramacion.com/arbolnavidad');
+    } else if (EstaTexto(Mensaje, "video") || Mensaje == "/\video") {
+      bot.sendMessage(chatId, 'Video proyecto: https://youtube.com/alswnet');
+    } else if (EstaTexto(Mensaje, "error") || Mensaje == "/\error") {
+      bot.sendMessage(chatId, 'Reporar Errores o problemas o ideas en: https://github.com/alswnet/ArbolNavidad2020/issues');
+    } else if (EstaTexto(Mensaje, "discord") || Mensaje == "/\discord") {
+      bot.sendMessage(chatId, 'Discord: https://nocheprogramacion.com/discord');
     } else if (EstaTexto(Mensaje, "nocheprogramacion") || Mensaje == "tutorial" || Mensaje == "\/tutorial") {
       bot.sendMessage(chatId, 'Tutoriales: https://nocheprogramacion.com');
     } else if (EstaTexto(Mensaje, "programacionnews") || EstaTexto(Mensaje, "noticias") || Mensaje == "\/noticias") {
@@ -106,6 +121,22 @@ function CambiarColor(ID, Mensaje) {
   if (!Encontrado) {
     bot.sendMessage(ID, 'Color no esta en la lista intenta /listacolor');
   }
+}
+
+function MensajeFoto(ID) {
+  var Mensaje = "Tomando *FOTO* espera\n";
+  Mensaje += "Recuerda compartir y etiquetarnos como @ALSWnet";
+  bot.sendMessage(ID, Mensaje, {
+    parse_mode: "Markdown"
+  });
+}
+
+function MensajeEstado(ID) {
+  var Mensaje = "Esta Actual del Arbol:\n";
+  Mensaje += "Puede tomarle foto con /foto";
+  bot.sendMessage(ID, Mensaje, {
+    parse_mode: "Markdown"
+  });
 }
 
 function MensajeAyuda(ID) {
