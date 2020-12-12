@@ -23,9 +23,10 @@ var opts = {
 
 var Webcam = NodeWebcam.create(opts);
 
-Webcam.list(function(list) {
-  console.log(list);
-});
+// Webcam.list(function(list) {
+//   console.log("Lista de camaras disponible")
+//   console.log(list);
+// });
 
 console.log("Arbol de Navidad 2020");
 
@@ -148,12 +149,17 @@ function MensajeFoto(ID, Tiempo) {
   bot.sendMessage(ID, Mensaje, {
     parse_mode: "Markdown"
   });
-  var NombreImagen = ID + "-" + Tiempo;
+  var NombreImagen = "./Foto/" + ID + "-" + Tiempo + ".jpg";
   Webcam.capture(NombreImagen, function(err, data) {
-    bot.sendPhoto(ID, NombreImagen + ".jpg", {
-      caption: "Configurado por: {Nombre} a la fecha: {Fecha}"
-    });
-    console.log("Foto Enviada " + NombreImagen + ".jpg");
+    if (err) {
+      console.log("Error con la camara");
+        bot.sendMessage(ID, 'Error con la camara, disculpa :( ');
+    } else {
+      bot.sendPhoto(ID, NombreImagen, {
+        caption: "Configurado por: {Nombre} a la fecha: {Fecha}"
+      });
+      console.log("Foto Enviada " + NombreImagen);
+    }
   });
 }
 
