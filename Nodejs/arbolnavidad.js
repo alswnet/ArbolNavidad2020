@@ -2,6 +2,7 @@
 const TelegramBot = require('node-telegram-bot-api');
 const fs = require('fs');
 const NodeWebcam = require("node-webcam");
+var Jimp = require('jimp');
 
 var Contastes = require('./Token');
 
@@ -13,7 +14,7 @@ var opts = {
   width: 1280,
   height: 720,
   quality: 100,
-  delay: 0,
+  delay: 2,
   saveShots: true,
   output: "jpeg",
   device: '/dev/video2',
@@ -153,15 +154,50 @@ function MensajeFoto(ID, Tiempo) {
   Webcam.capture(NombreImagen, function(err, data) {
     if (err) {
       console.log("Error con la camara");
-        bot.sendMessage(ID, 'Error con la camara, disculpa :( ');
+      bot.sendMessage(ID, 'Error con la camara, disculpa :( ');
     } else {
-      bot.sendPhoto(ID, NombreImagen, {
-        caption: "Configurado por: {Nombre} a la fecha: {Fecha}"
-      });
+      EditandoImagen(ID, NombreImagen);
       console.log("Foto Enviada " + NombreImagen);
     }
   });
 }
+
+async function EditandoImagen(ID, NombreImagen) {
+  console.log("EditandoImagen")
+  let ImagenBase = await Jimp.read(NombreImagen);
+  let ImagenExtra = await Jimp.read("./Foto/Mascara.png")
+  const Fuente = await Jimp.loadFont(Jimp.FONT_SANS_64_BLACK);
+  await ImagenExtra.resize(300, 150);
+  ImagenExtra = await ImagenExtra
+  ImagenBase.composite(ImagenExtra, 0, 0, {
+    mode: Jimp.BLEND_SOURCE_OVER,
+    opacityDest: 1,
+    opacitySource: 0.5
+  })
+  ImagenBase.print(Fuente, 20, 300, "Fecha: " + FechaActual());
+
+  await ImagenBase.writeAsync(NombreImagen);
+
+  bot.sendPhoto(ID, NombreImagen, {
+    caption: "Configurado por: {Nombre} a la fecha: {Fecha}"
+  });
+}
+
+function FechaActual() {
+  var anno = (new Date()).getFullYear();
+  var mes = (new Date()).getMonth() + 1;
+  var dia = (new Date()).getDate();
+  var hora = (new Date()).getHours();
+  if (hora < 10) {
+    hora = "0" + hora;
+  }
+  var minuto = (new Date()).getMinutes();
+  if (minuto < 10) {
+    minuto = "0" + minuto;
+  }
+  return hora + ":" + minuto + " " + dia + "/" + mes + "/" + anno
+}
+
 
 function MensajeEstado(ID) {
   var Mensaje = "Esta Actual del Arbol:\n";

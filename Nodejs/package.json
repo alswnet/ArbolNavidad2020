@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/alswnet/ArbolNavidad2020#readme",
   "dependencies": {
+    "jimp": "^0.16.1",
     "node-telegram-bot-api": "^0.50.0",
     "node-webcam": "^0.6.4",
     "serialport": "^9.0.3"
