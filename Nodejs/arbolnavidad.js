@@ -1,11 +1,30 @@
 /*jshint esversion: 6 */
 const TelegramBot = require('node-telegram-bot-api');
 const fs = require('fs');
+const NodeWebcam = require("node-webcam");
 
 var Contastes = require('./Token');
 
 const bot = new TelegramBot(Contastes.token, {
   polling: true
+});
+
+var opts = {
+  width: 1280,
+  height: 720,
+  quality: 100,
+  delay: 0,
+  saveShots: true,
+  output: "jpeg",
+  device: '/dev/video2',
+  callbackReturn: "location",
+  verbose: true
+};
+
+var Webcam = NodeWebcam.create(opts);
+
+Webcam.list(function(list) {
+  console.log(list);
 });
 
 console.log("Arbol de Navidad 2020");
@@ -19,7 +38,7 @@ bot.on('message', (msg) => {
     var Mensaje = msg.text.toLowerCase();
 
     if (EstaTexto(Mensaje, "foto") || Mensaje == "/\foto") {
-      MensajeFoto(chatId);
+      MensajeFoto(chatId, msg.date);
     } else if (EstaTexto(Mensaje, "estado") || Mensaje == "/\estado") {
       MensajeEstado(chatId);
     } else if (EstaTexto(Mensaje, "listacolor") || Mensaje == "/\listacolor") {
@@ -123,11 +142,18 @@ function CambiarColor(ID, Mensaje) {
   }
 }
 
-function MensajeFoto(ID) {
+function MensajeFoto(ID, Tiempo) {
   var Mensaje = "Tomando *FOTO* espera\n";
   Mensaje += "Recuerda compartir y etiquetarnos como @ALSWnet";
   bot.sendMessage(ID, Mensaje, {
     parse_mode: "Markdown"
+  });
+  var NombreImagen = ID + "-" + Tiempo;
+  Webcam.capture(NombreImagen, function(err, data) {
+    bot.sendPhoto(ID, NombreImagen + ".jpg", {
+      caption: "Configurado por: {Nombre} a la fecha: {Fecha}"
+    });
+    console.log("Foto Enviada " + NombreImagen + ".jpg");
   });
 }
 
