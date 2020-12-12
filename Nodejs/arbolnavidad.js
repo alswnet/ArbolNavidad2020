@@ -1,5 +1,6 @@
 /*jshint esversion: 6 */
 const TelegramBot = require('node-telegram-bot-api');
+const fs = require('fs');
 
 var Contastes = require('./Token');
 
@@ -16,13 +17,15 @@ bot.on('message', (msg) => {
     SalvarChat(msg);
     var chatId = msg.chat.id;
     var Mensaje = msg.text.toLowerCase();
-    if (Mensaje == "ayuda" || Mensaje == "/\ayuda" || Mensaje == "a") {
+    if (EstaTexto(Mensaje, "color")) {
+      CambiarColor(chatId, Mensaje);
+    } else if (EstaTexto(Mensaje, "ayuda") || Mensaje == "/\ayuda") {
       MensajeAyuda(chatId)
-    } else if (Mensaje == "inicio" || Mensaje == "/\start") {
+    } else if (EstaTexto(Mensaje, "inicio") || Mensaje == "/\start") {
       MensajeBienbenida(chatId);
-    } else if (Mensaje == "nocheprogramacion" || Mensaje == "tutorial" || Mensaje == "\/tutorial") {
+    } else if (EstaTexto(Mensaje, "nocheprogramacion") || Mensaje == "tutorial" || Mensaje == "\/tutorial") {
       bot.sendMessage(chatId, 'Tutoriales: https://nocheprogramacion.com');
-    } else if (Mensaje == "programacionnews" || Mensaje == "noticias" || Mensaje == "\/noticias") {
+    } else if (EstaTexto(Mensaje, "programacionnews") || EstaTexto(Mensaje, "noticias") || Mensaje == "\/noticias") {
       bot.sendMessage(chatId, 'Noticas: https://programacion.news');
     } else {
       bot.sendMessage(chatId, 'No entiendo intenta con /ayuda o entra a https://nocheprogramacion.com/arbolnavidad');
@@ -42,6 +45,15 @@ function SalvarChat(Mensaje) {
   // console.log(Mensaje)
 }
 
+function EstaTexto(Mensaje, Texto) {
+  if (Mensaje.indexOf(Texto) >= 0) {
+    return true;
+  } else {
+    return false;
+  }
+
+}
+
 function MensajeBienbenida(ID) {
   var Mensaje = "*Bienbenido* al Bot del Arbol de Navidad 2020 *ALSW* \n";
   Mensaje += "Si es tu primera vez por aqui entra a: \n";
@@ -49,14 +61,42 @@ function MensajeBienbenida(ID) {
   Mensaje += "o usa el comando \n";
   Mensaje += "/ayuda \n";
   Mensaje += "*Feliz Navidad de ALSW*";
+
   bot.sendMessage(ID, Mensaje, {
     parse_mode: "Markdown"
   });
 }
 
+function ListaColor() {
+  let ArchivoColores = fs.readFileSync('Colores.json');
+  let Colores = JSON.parse(ArchivoColores)['Colores'];
+  return Colores;
+}
+
+function CambiarColor(ID, Mensaje) {
+  Colores = ListaColor();
+  var Encontrado = false;
+  Colores.forEach((Color, i) => {
+    if (EstaTexto(Mensaje, Color)) {
+      var TextoColor = "Cambiando el arbol a color:\n*";
+      TextoColor += Color + "*";
+      bot.sendMessage(ID, TextoColor, {
+        parse_mode: "Markdown"
+      });
+      Encontrado = true;
+      return;
+    }
+
+  });
+  if (!Encontrado) {
+    bot.sendMessage(ID, 'Color no esta en la lista intenta /listacolor');
+  }
+}
+
 function MensajeAyuda(ID) {
   var Mensaje = "El *Bot* tiene los siquientes comandos:\n"
   Mensaje += "/start  Mensaje de Bienbenida del Bot\n";
+  Mensaje += "/estado Devuelve estado actual del arbol colores y usuario\n"
   Mensaje += "/foto Pedir foto del arbol actual\n";
   Mensaje += "/color {COLOR} Cambiar el color de arbol a un color de la lista\n";
   Mensaje += "/listacolor Muestra lista de colores para el arbol\n";
