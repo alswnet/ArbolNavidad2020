@@ -17,7 +17,9 @@ bot.on('message', (msg) => {
     SalvarChat(msg);
     var chatId = msg.chat.id;
     var Mensaje = msg.text.toLowerCase();
-    if (EstaTexto(Mensaje, "color")) {
+    if (EstaTexto(Mensaje, "listacolor") || Mensaje == "/\listacolor") {
+      MensajeListaColor(chatId);
+    } else if (EstaTexto(Mensaje, "color") || Mensaje == "/\color") {
       CambiarColor(chatId, Mensaje);
     } else if (EstaTexto(Mensaje, "ayuda") || Mensaje == "/\ayuda") {
       MensajeAyuda(chatId)
@@ -51,7 +53,6 @@ function EstaTexto(Mensaje, Texto) {
   } else {
     return false;
   }
-
 }
 
 function MensajeBienbenida(ID) {
@@ -71,6 +72,20 @@ function ListaColor() {
   let ArchivoColores = fs.readFileSync('Colores.json');
   let Colores = JSON.parse(ArchivoColores)['Colores'];
   return Colores;
+}
+
+function MensajeListaColor(ID) {
+  Colores = ListaColor();
+  var Mensaje = "Lista de *colores* disponibles:\n"
+  Colores.forEach((Color, i) => {
+    Mensaje += Color + "\n"
+  });
+  Mensaje += "*Ejemplo:*\n";
+  Mensaje += "/color rojo";
+
+  bot.sendMessage(ID, Mensaje, {
+    parse_mode: "Markdown"
+  });
 }
 
 function CambiarColor(ID, Mensaje) {
