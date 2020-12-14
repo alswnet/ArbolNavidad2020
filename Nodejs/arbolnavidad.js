@@ -11,7 +11,9 @@ const bot = new TelegramBot(Contastes.telegram_token, {
   polling: true
 });
 
-// var client = mqtt.connect(Contastes.telegram_token);
+var client = mqtt.connect(Contastes.mqtt_token, {
+  clientId: 'ServidorNavidadBot'
+});
 
 var opts = {
   width: 1280,
@@ -35,9 +37,9 @@ var Webcam = NodeWebcam.create(opts);
 
 console.log("Arbol de Navidad 2020");
 
-// client.on('connect', function() {
-//   console.log("Conectado a MQTT")
-// })
+client.on('connect', function() {
+  console.log("Conectado a MQTT")
+})
 
 bot.on('message', (msg) => {
   if (msg.from.is_bot) {
@@ -202,13 +204,12 @@ function MensajeMQTTMatrix(colores) {
 }
 
 function MensajeMQTT(Color) {
-  // if (client.connected) {
-  //   // client.publish('/ALSW/Navidad/Color', Color);
-  //   return true;
-  // } else {
-  //   return false;
-  // }
-  return true;
+  if (client.connected) {
+    client.publish('/ALSW/Navidad/Color', Color);
+    return true;
+  } else {
+    return false;
+  }
 }
 
 function MensajeFoto(ID, Tiempo) {
