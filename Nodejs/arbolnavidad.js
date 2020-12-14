@@ -3,12 +3,15 @@ const TelegramBot = require('node-telegram-bot-api');
 const fs = require('fs');
 const NodeWebcam = require("node-webcam");
 var Jimp = require('jimp');
+var mqtt = require('mqtt');
 
 var Contastes = require('./Token');
 
-const bot = new TelegramBot(Contastes.token, {
+const bot = new TelegramBot(Contastes.telegram_token, {
   polling: true
 });
+
+// var client = mqtt.connect(Contastes.telegram_token);
 
 var opts = {
   width: 1280,
@@ -29,7 +32,12 @@ var Webcam = NodeWebcam.create(opts);
 //   console.log(list);
 // });
 
+
 console.log("Arbol de Navidad 2020");
+
+// client.on('connect', function() {
+//   console.log("Conectado a MQTT")
+// })
 
 bot.on('message', (msg) => {
   if (msg.from.is_bot) {
@@ -38,14 +46,20 @@ bot.on('message', (msg) => {
     SalvarChat(msg);
     var chatId = msg.chat.id;
     var Mensaje = msg.text.toLowerCase();
-
     if (EstaTexto(Mensaje, "foto") || Mensaje == "/\foto") {
+      console.log("Preperando tomar foto");
       MensajeFoto(chatId, msg.date);
     } else if (EstaTexto(Mensaje, "estado") || Mensaje == "/\estado") {
+      console.log("Pidiendo estado");
       MensajeEstado(chatId);
     } else if (EstaTexto(Mensaje, "listacolor") || Mensaje == "/\listacolor") {
+      console.log("Mandando Lista de colores");
       MensajeListaColor(chatId);
+    } else if (EstaTexto(Mensaje, "matris") || Mensaje == "/\matris") {
+      console.log("Cambiando a color matris");
+      CambiarColorMatrix(chatId, Mensaje);
     } else if (EstaTexto(Mensaje, "color") || Mensaje == "/\color") {
+      console.log("Cambiando a color");
       CambiarColor(chatId, Mensaje);
     } else if (EstaTexto(Mensaje, "ayuda") || Mensaje == "/\ayuda") {
       MensajeAyuda(chatId)
@@ -124,13 +138,51 @@ function MensajeListaColor(ID) {
   });
 }
 
+function CambiarColorMatrix(ID, Mensaje) {
+  Colores = ListaColor();
+  MensajeColores = [];
+  var TextoColor = "";
+  ParteMensaje = Mensaje.split(' ');
+  console.log(ParteMensaje)
+  if (ParteMensaje.length > 1) {
+    console.log("Empezando a procesar")
+    for (var i = 1; i < ParteMensaje.length; i++) {
+      Colores.forEach((Color, j) => {
+        if (EstaTexto(ParteMensaje[i], Color)) {
+          MensajeColores.push(Color);
+        }
+      });
+    }
+  }
+
+
+  if (MensajeColores.length > 0) {
+    console.log("Enviando " + MensajeColores);
+    TextoColor += "Se envio " + MensajeColores;
+  } else {
+    console.log("No suficiente valores");
+    TextoColor += "Lista de Color no esta en la lista intenta /listacolor"
+  }
+
+  bot.sendMessage(ID, TextoColor, {
+    parse_mode: "Markdown"
+  });
+}
+
 function CambiarColor(ID, Mensaje) {
   Colores = ListaColor();
   var Encontrado = false;
+
   Colores.forEach((Color, i) => {
     if (EstaTexto(Mensaje, Color)) {
-      var TextoColor = "Cambiando el arbol a color:\n*";
-      TextoColor += Color + "*";
+      console.log("Color encontrado: " + Color)
+      var TextoColor = "";
+      if (MensajeMQTT(Color)) {
+        TextoColor += "Cambiando el arbol a color:\n*";
+        TextoColor += Color + "*";
+      } else {
+        TextoColor += "Error con el servidor MQTT";
+      }
       bot.sendMessage(ID, TextoColor, {
         parse_mode: "Markdown"
       });
@@ -140,8 +192,23 @@ function CambiarColor(ID, Mensaje) {
 
   });
   if (!Encontrado) {
-    bot.sendMessage(ID, 'Color no esta en la lista intenta /listacolor');
+    bot.sendMessage(chatId, 'Color no esta en la lista intenta /listacolor');
   }
+
+}
+
+function MensajeMQTTMatrix(colores) {
+
+}
+
+function MensajeMQTT(Color) {
+  // if (client.connected) {
+  //   // client.publish('/ALSW/Navidad/Color', Color);
+  //   return true;
+  // } else {
+  //   return false;
+  // }
+  return true;
 }
 
 function MensajeFoto(ID, Tiempo) {
@@ -213,6 +280,7 @@ function MensajeAyuda(ID) {
   Mensaje += "/estado Devuelve estado actual del arbol colores y usuario\n"
   Mensaje += "/foto Pedir foto del arbol actual\n";
   Mensaje += "/color {COLOR} Cambiar el color de arbol a un color de la lista\n";
+  Mensaje += "/matris {Color} {Color} ... {Color} Cambia el arbol en base a una secuencia de colores"
   Mensaje += "/listacolor Muestra lista de colores para el arbol\n";
   Mensaje += "/tutorial Pedir sitio web de *Tutoriales* de ALSW\n";
   Mensaje += "/noticias Pedir sitio web de *Noticias* de ALSW\n";
