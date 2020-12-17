@@ -22,17 +22,17 @@ var opts = {
   delay: 2,
   saveShots: true,
   output: "jpeg",
-  device: '/dev/video2',
+  device: Contastes.camara,
   callbackReturn: "location",
   verbose: true
 };
 
 var Webcam = NodeWebcam.create(opts);
 
-// Webcam.list(function(list) {
-//   console.log("Lista de camaras disponible")
-//   console.log(list);
-// });
+Webcam.list(function(list) {
+  console.log("Lista de camaras disponible:")
+  console.log(list);
+});
 
 
 console.log("Arbol de Navidad 2020");
@@ -161,6 +161,7 @@ function CambiarColorMatrix(ID, Mensaje) {
   if (MensajeColores.length > 0) {
     console.log("Enviando " + MensajeColores);
     TextoColor += "Se envio " + MensajeColores;
+    MensajeMQTTMatrix(MensajeColores);
   } else {
     console.log("No suficiente valores");
     TextoColor += "Lista de Color no esta en la lista intenta /listacolor"
@@ -200,7 +201,12 @@ function CambiarColor(ID, Mensaje) {
 }
 
 function MensajeMQTTMatrix(colores) {
-
+  if (client.connected) {
+    client.publish('/ALSW/Navidad/Colores', JSON.stringify(colores));
+    return true;
+  } else {
+    return false;
+  }
 }
 
 function MensajeMQTT(Color) {
