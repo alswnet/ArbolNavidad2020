@@ -1,20 +1,24 @@
 /*jshint esversion: 6 */
+var Contastes = require('./Token');
+
 const TelegramBot = require('node-telegram-bot-api');
 const fs = require('fs');
 const NodeWebcam = require("node-webcam");
 var Jimp = require('jimp');
-var SerialPort = require('serialport');
 
-var Contastes = require('./Token');
+var SerialPort = require('serialport');
+const Readline = require('@serialport/parser-readline');
+var MiPuerto = new SerialPort(Contastes.puertoserial, {
+  baudRate: 9600,
+  autoOpen: true
+});
+const MiParse = new Readline();
+MiPuerto.pipe(MiParse);
 
 const bot = new TelegramBot(Contastes.telegram_token, {
   polling: true
 });
 
-var MiPuerto = new SerialPort(Contastes.puertoserial, {
-  baudRate: 9600,
-  autoOpen: true
-});
 
 var opts = {
   width: 1280,
@@ -177,7 +181,7 @@ function CambiarColor(ID, Mensaje) {
     if (EstaTexto(Mensaje, Color)) {
       console.log("Color encontrado: " + Color)
       var TextoColor = "";
-      if (MensajeMQTT(Color)) {
+      if (MensajeSerial(Color)) {
         TextoColor += "Cambiando el arbol a color:\n*";
         TextoColor += Color + "*";
       } else {
@@ -201,7 +205,8 @@ function MensajeMQTTMatrix(colores) {
   return true;
 }
 
-function MensajeMQTT(Color) {
+function MensajeSerial(Color) {
+  MiPuerto.write("color/" + Color + "/n");
   return true;
 }
 
@@ -290,8 +295,8 @@ function MensajeAyuda(ID) {
   });
 }
 
-MiPuerto.setEncoding('utf8');
+MiParse.setEncoding('utf8');
 
-MiPuerto.on('data', function(data) {
-  console.log("Lo que entro es " + data);
+MiParse.on('data', function(data) {
+  console.log("(Arduino): " + data);
 });
