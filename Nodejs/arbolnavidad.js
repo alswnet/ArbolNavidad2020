@@ -3,7 +3,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const fs = require('fs');
 const NodeWebcam = require("node-webcam");
 var Jimp = require('jimp');
-var mqtt = require('mqtt');
+var SerialPort = require('serialport');
 
 var Contastes = require('./Token');
 
@@ -11,15 +11,16 @@ const bot = new TelegramBot(Contastes.telegram_token, {
   polling: true
 });
 
-var client = mqtt.connect(Contastes.mqtt_token, {
-  clientId: 'ServidorNavidadBot'
+var MiPuerto = new SerialPort(Contastes.puertoserial, {
+  baudRate: 9600,
+  autoOpen: true
 });
 
 var opts = {
   width: 1280,
   height: 720,
   quality: 100,
-  delay: 2,
+  delay: 1,
   saveShots: true,
   output: "jpeg",
   device: Contastes.camara,
@@ -36,10 +37,6 @@ Webcam.list(function(list) {
 
 
 console.log("Arbol de Navidad 2020");
-
-client.on('connect', function() {
-  console.log("Conectado a MQTT")
-})
 
 bot.on('message', (msg) => {
   if (msg.from.is_bot) {
@@ -201,21 +198,11 @@ function CambiarColor(ID, Mensaje) {
 }
 
 function MensajeMQTTMatrix(colores) {
-  if (client.connected) {
-    client.publish('/ALSW/Navidad/Colores', JSON.stringify(colores));
-    return true;
-  } else {
-    return false;
-  }
+  return true;
 }
 
 function MensajeMQTT(Color) {
-  if (client.connected) {
-    client.publish('/ALSW/Navidad/Color', Color);
-    return true;
-  } else {
-    return false;
-  }
+  return true;
 }
 
 function MensajeFoto(ID, Tiempo) {
@@ -302,3 +289,9 @@ function MensajeAyuda(ID) {
     parse_mode: "Markdown"
   });
 }
+
+MiPuerto.setEncoding('utf8');
+
+MiPuerto.on('data', function(data) {
+  console.log("Lo que entro es " + data);
+});
