@@ -162,7 +162,7 @@ function CambiarColorMatrix(ID, Mensaje) {
   if (MensajeColores.length > 0) {
     console.log("Enviando " + MensajeColores);
     TextoColor += "Se envio " + MensajeColores;
-    MensajeMQTTMatrix(MensajeColores);
+    MensajeMatrix(MensajeColores);
   } else {
     console.log("No suficiente valores");
     TextoColor += "Lista de Color no esta en la lista intenta /listacolor"
@@ -176,16 +176,18 @@ function CambiarColorMatrix(ID, Mensaje) {
 function CambiarColor(ID, Mensaje) {
   Colores = ListaColor();
   var Encontrado = false;
+  console.log(Mensaje, Colores.length)
 
-  Colores.forEach((Color, i) => {
-    if (EstaTexto(Mensaje, Color)) {
-      console.log("Color encontrado: " + Color)
+  for (var i = 0; i < Colores.length; i++) {
+    console.log(i, Mensaje, Colores[i]);
+    if (EstaTexto(Mensaje, Colores[i])) {
+      console.log("Color encontrado: " + Colores[i])
       var TextoColor = "";
-      if (MensajeSerial(Color)) {
+      if (MensajeSerial(Colores[i])) {
         TextoColor += "Cambiando el arbol a color:\n*";
-        TextoColor += Color + "*";
+        TextoColor += Colores[i] + "*";
       } else {
-        TextoColor += "Error con el servidor MQTT";
+        TextoColor += "Error con el Arduino";
       }
       bot.sendMessage(ID, TextoColor, {
         parse_mode: "Markdown"
@@ -193,20 +195,24 @@ function CambiarColor(ID, Mensaje) {
       Encontrado = true;
       return;
     }
-
-  });
+  }
   if (!Encontrado) {
-    bot.sendMessage(chatId, 'Color no esta en la lista intenta /listacolor');
+    bot.sendMessage(ID, 'Color no esta en la lista intenta /listacolor');
   }
 
 }
 
-function MensajeMQTTMatrix(colores) {
+function MensajeMatrix(colores) {
+  MiPuerto.write("matris/reiniciar/n");
+  // console.log(colores)
+  for (var i = 0; i < colores.length; i++) {
+    MiPuerto.write("matris/" + colores[i]);
+  }
   return true;
 }
 
 function MensajeSerial(Color) {
-  MiPuerto.write("color/" + Color + "/n");
+  MiPuerto.write("color/" + Color);
   return true;
 }
 
@@ -298,5 +304,6 @@ function MensajeAyuda(ID) {
 MiParse.setEncoding('utf8');
 
 MiParse.on('data', function(data) {
-  console.log("(Arduino): " + data);
+  var Mensaje = data.split('/n');
+  console.log(Mensaje);
 });
