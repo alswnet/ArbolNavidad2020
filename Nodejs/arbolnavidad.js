@@ -241,12 +241,12 @@ async function EditandoImagen(ID, NombreImagen) {
   let ImagenBase = await Jimp.read(NombreImagen);
   let ImagenExtra = await Jimp.read("./Foto/Mascara.png")
   const Fuente = await Jimp.loadFont(Jimp.FONT_SANS_64_BLACK);
-  await ImagenExtra.resize(300, 150);
+  // await ImagenExtra.resize(300, 150);
   ImagenExtra = await ImagenExtra
   ImagenBase.composite(ImagenExtra, 0, 0, {
     mode: Jimp.BLEND_SOURCE_OVER,
     opacityDest: 1,
-    opacitySource: 0.5
+    opacitySource: 1
   })
   ImagenBase.print(Fuente, 20, 300, "Fecha: " + FechaActual());
 
