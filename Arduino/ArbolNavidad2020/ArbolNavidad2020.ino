@@ -20,7 +20,7 @@ void setup() {
   Serial.begin(9600);
   TiraNeoPixel.begin();
   TiraNeoPixel.show();
-  TiraNeoPixel.setBrightness(255);
+  TiraNeoPixel.setBrightness(100);
   uint32_t ColorFull = QueColorEs("blanco");
   FullColor(ColorFull, 3);
   ColorFull = QueColorEs("azul");

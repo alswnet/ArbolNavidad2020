@@ -271,17 +271,23 @@ async function EditandoImagen(ID, NombreImagen) {
   let Ultimo = fs.readFileSync('Data/Ultimo.json');
   Ultimo = JSON.parse(Ultimo);
   let ImagenExtra = await Jimp.read("./Foto/Mascara.png")
-  var Fuente = await Jimp.loadFont(Jimp.FONT_SANS_64_BLACK);
-  // await ImagenExtra.resize(300, 150);
-  ImagenExtra = await ImagenExtra
-  ImagenBase.composite(ImagenExtra, 0, 0, {
-    mode: Jimp.BLEND_SOURCE_OVER,
-    opacityDest: 1,
-    opacitySource: 1
-  })
-  ImagenBase.print(Fuente, 20, 300, "Fecha: " + Ultimo['Fecha']);
+  var Fuente = await Jimp.loadFont(Jimp.FONT_SANS_32_WHITE);
+  await ImagenBase.resize(1080, Jimp.AUTO);
+  ImagenExtra.composite(ImagenBase, 100, 120, {
+    mode: Jimp.BLEND_DESTINATION_OVER,
+   opacityDest: 1,
+   opacitySource: 1
+ })
+  // ImagenExtra = await ImagenExtra
+  // ImagenBase.composite(ImagenExtra, 0, 0, {
+  //   mode: Jimp.BLEND_SOURCE_OVER,
+  //   opacityDest: 1,
+  //   opacitySource: 1
+  // })
+  ImagenExtra.print(Fuente, 180, 655, "Nombre: " + Ultimo['Nombre'], 600);
+  ImagenExtra.print(Fuente, 180, 690, "Fecha: " + Ultimo['Fecha'], 600);
 
-  await ImagenBase.writeAsync(NombreImagen);
+  await ImagenExtra.writeAsync(NombreImagen);
 
   bot.sendPhoto(ID, NombreImagen, {
     caption: "Arbol configurado por " + Ultimo['Nombre'] + " a " + Ultimo['Fecha']
