@@ -24,7 +24,7 @@ var opts = {
   width: 1280,
   height: 720,
   quality: 100,
-  delay: 1,
+  delay: 2,
   saveShots: true,
   output: "jpeg",
   device: Contastes.camara,
