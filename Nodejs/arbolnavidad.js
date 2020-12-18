@@ -60,9 +60,11 @@ bot.on('message', (msg) => {
       MensajeListaColor(chatId);
     } else if (EstaTexto(Mensaje, "matris") || Mensaje == "/\matris") {
       console.log("Cambiando a color matris");
+      SalvarUltimo(msg);
       CambiarColorMatrix(chatId, Mensaje);
     } else if (EstaTexto(Mensaje, "color") || Mensaje == "/\color") {
       console.log("Cambiando a color");
+      SalvarUltimo(msg);
       CambiarColor(chatId, Mensaje);
     } else if (EstaTexto(Mensaje, "ayuda") || Mensaje == "/\ayuda") {
       MensajeAyuda(chatId)
@@ -87,6 +89,25 @@ bot.on('message', (msg) => {
     }
   }
 });
+
+
+function SalvarUltimo(Mensaje) {
+  var Nombre = Mensaje.chat.first_name;
+  var Fecha = new Date(Mensaje.date * 1000);
+  var data = {
+    'Nombre': Nombre,
+    'Fecha': Fecha
+  }
+
+  data = JSON.stringify(data);
+  fs.writeFileSync('Data/Ultimo.json', data);
+
+  // fs.readFile('Data/Ultimo.json', (err, data) => {
+  //   if (err) throw err;
+  //   let student = JSON.parse(data);
+  //   console.log(student);
+  // });
+}
 
 function SalvarChat(Mensaje) {
   var ID = Mensaje.chat.id
@@ -174,6 +195,7 @@ function CambiarColorMatrix(ID, Mensaje) {
 }
 
 function CambiarColor(ID, Mensaje) {
+
   Colores = ListaColor();
   var Encontrado = false;
   console.log(Mensaje, Colores.length)
@@ -212,7 +234,7 @@ function MensajeMatrix(colores) {
 }
 
 function MensajeSerial(Color) {
-  MiPuerto.write("color/" + Color +"*");
+  MiPuerto.write("color/" + Color + "*");
   return true;
 }
 
