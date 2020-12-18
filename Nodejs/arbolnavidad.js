@@ -94,9 +94,11 @@ bot.on('message', (msg) => {
 function SalvarUltimo(Mensaje) {
   var Nombre = Mensaje.chat.first_name;
   var Fecha = FechaActual();
+  var Texto = Mensaje.text;
   var data = {
     'Nombre': Nombre,
-    'Fecha': Fecha
+    'Fecha': Fecha,
+    'mensaje': Texto
   }
 
   data = JSON.stringify(data);
@@ -275,15 +277,9 @@ async function EditandoImagen(ID, NombreImagen) {
   await ImagenBase.resize(1080, Jimp.AUTO);
   ImagenExtra.composite(ImagenBase, 100, 120, {
     mode: Jimp.BLEND_DESTINATION_OVER,
-   opacityDest: 1,
-   opacitySource: 1
- })
-  // ImagenExtra = await ImagenExtra
-  // ImagenBase.composite(ImagenExtra, 0, 0, {
-  //   mode: Jimp.BLEND_SOURCE_OVER,
-  //   opacityDest: 1,
-  //   opacitySource: 1
-  // })
+    opacityDest: 1,
+    opacitySource: 1
+  })
   ImagenExtra.print(Fuente, 180, 655, "Nombre: " + Ultimo['Nombre'], 600);
   ImagenExtra.print(Fuente, 180, 690, "Fecha: " + Ultimo['Fecha'], 600);
 
@@ -311,7 +307,11 @@ function FechaActual() {
 
 
 function MensajeEstado(ID) {
-  var Mensaje = "Esta Actual del Arbol:\n";
+  let Ultimo = fs.readFileSync('Data/Ultimo.json');
+  Ultimo = JSON.parse(Ultimo);
+  var Mensaje = "Ultima configuracion por " + Ultimo['Nombre'] + " :\n";
+  Mensaje += "Hora y Fecha: " + Ultimo['Fecha'] + " :\n";
+  Mensaje += "Mensaje: " + Ultimo['mensaje'] + " :\n";
   Mensaje += "Puede tomarle foto con /foto";
   bot.sendMessage(ID, Mensaje, {
     parse_mode: "Markdown"
