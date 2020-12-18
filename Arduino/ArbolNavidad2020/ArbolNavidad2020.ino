@@ -8,7 +8,8 @@
 #define LED_COUNT 124
 
 int CantidadMatris = 0;
-uint32_t MatrisColores[120];
+int CantidadMatrisMaxima = 2;
+uint32_t MatrisColores[10];
 
 Adafruit_NeoPixel TiraNeoPixel(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 
@@ -20,10 +21,10 @@ void setup() {
   TiraNeoPixel.begin();
   TiraNeoPixel.show();
   TiraNeoPixel.setBrightness(255);
-  uint32_t ColorFull = QueColorEs("rojo");
-  FullColor(ColorFull, 5);
+  uint32_t ColorFull = QueColorEs("blanco");
+  FullColor(ColorFull, 3);
   ColorFull = QueColorEs("azul");
-  FullColor(ColorFull, 10);
+  FullColor(ColorFull, 5);
 }
 
 void loop() {
@@ -34,17 +35,17 @@ void loop() {
 
 
 void DecodificarSerial() {
-  String Mensaje = Serial.readStringUntil('\n');
+  String Mensaje = Serial.readStringUntil('*');
   int PosicionPleca = Mensaje.indexOf('/');
   int PosicionSaltoLinea = Mensaje.length();
   String Dato = Mensaje.substring(0, PosicionPleca);
   String Valor = Mensaje.substring(PosicionPleca + 1, PosicionSaltoLinea);
 
-  Serial.print("Dato:");
-  Serial.print(Dato);
-  Serial.print(" Valor:");
-  Serial.print(Valor);
-  Serial.println("*");
+//  Serial.print("Dato:");
+//  Serial.print(Dato);
+//  Serial.print(" Valor:");
+//  Serial.print(Valor);
+//  Serial.println("*");
 
   if (Dato.equals("color")) {
     uint32_t ColorFull = QueColorEs(Valor);
@@ -61,14 +62,25 @@ void DecodificarSerial() {
       Serial.println("Reiniciando Matris");
       CantidadMatris = 0;
     }
-    else  if (CantidadMatris < TiraNeoPixel.numPixels()) {
-      CantidadMatris++;
+    else if (Valor.equals("activar")) {
+      Serial.println("Dibujando Matris");
+      for (int i = 0; i < CantidadMatris; i++) {
+        Serial.print(MatrisColores[i]);
+        Serial.print("/");
+      }
+      Serial.println();
+      MatrisColor();
+    }
+    else  if (CantidadMatris < CantidadMatrisMaxima) {
       Serial.print("Agregando ");
       Serial.print(CantidadMatris);
       Serial.print(" ");
       Serial.println(Valor);
       uint32_t ColorFull = QueColorEs(Valor);
-      FullColor(ColorFull, 10);
+      MatrisColores[CantidadMatris] = ColorFull;
+      CantidadMatris++;
+    } else {
+      Serial.println("Areglo lleno");
     }
   } else {
     Serial.println("No entiendo mensaje");
@@ -88,6 +100,18 @@ uint32_t QueColorEs(String TextoColor) {
     Serial.println("No color");
   }
 
+}
+
+void MatrisColor() {
+  int color = 0;
+  for (int i = 0; i < TiraNeoPixel.numPixels(); i++) {
+    TiraNeoPixel.setPixelColor(i, MatrisColores[color]);
+    color++;
+    if (color >= CantidadMatris) {
+      color = 0;
+    }
+  }
+  TiraNeoPixel.show();
 }
 
 void FullColor(uint32_t color, int wait) {
