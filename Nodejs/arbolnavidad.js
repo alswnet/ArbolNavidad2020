@@ -110,9 +110,24 @@ function SalvarChat(Mensaje) {
   var Nombre = Mensaje.chat.first_name;
   var Fecha = new Date(Mensaje.date * 1000);
   var Texto = Mensaje.text;
+  var Salvar = {
+    'ID': ID,
+    'User': User,
+    'Nombre': Nombre,
+    'Fecha': Fecha,
+    'Texto': Texto,
+    'Lenguaje': Lenguaje
+  }
 
-  console.log("Salvando: " + User + "-" + Nombre + " Mensaje:" + Texto + " Fecha:" + Fecha);
-  // console.log(Mensaje)
+  fs.readFile('./Data/Historia.json', function(err, data) {
+    var json = JSON.parse(data);
+    json.Historia.push(Salvar);
+    fs.writeFile("./Data/Historia.json", JSON.stringify(json),
+      function(err) {
+        if (err) throw err;
+        console.log('The data was appended to file!');
+      });
+  });
 }
 
 function EstaTexto(Mensaje, Texto) {
