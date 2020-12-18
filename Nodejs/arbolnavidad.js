@@ -93,7 +93,7 @@ bot.on('message', (msg) => {
 
 function SalvarUltimo(Mensaje) {
   var Nombre = Mensaje.chat.first_name;
-  var Fecha = new Date(Mensaje.date * 1000);
+  var Fecha = FechaActual();
   var data = {
     'Nombre': Nombre,
     'Fecha': Fecha
@@ -101,12 +101,6 @@ function SalvarUltimo(Mensaje) {
 
   data = JSON.stringify(data);
   fs.writeFileSync('Data/Ultimo.json', data);
-
-  // fs.readFile('Data/Ultimo.json', (err, data) => {
-  //   if (err) throw err;
-  //   let student = JSON.parse(data);
-  //   console.log(student);
-  // });
 }
 
 function SalvarChat(Mensaje) {
@@ -259,8 +253,10 @@ function MensajeFoto(ID, Tiempo) {
 async function EditandoImagen(ID, NombreImagen) {
   console.log("EditandoImagen")
   let ImagenBase = await Jimp.read(NombreImagen);
+  let Ultimo = fs.readFileSync('Data/Ultimo.json');
+  Ultimo = JSON.parse(Ultimo);
   let ImagenExtra = await Jimp.read("./Foto/Mascara.png")
-  const Fuente = await Jimp.loadFont(Jimp.FONT_SANS_64_BLACK);
+  var Fuente = await Jimp.loadFont(Jimp.FONT_SANS_64_BLACK);
   // await ImagenExtra.resize(300, 150);
   ImagenExtra = await ImagenExtra
   ImagenBase.composite(ImagenExtra, 0, 0, {
@@ -268,12 +264,12 @@ async function EditandoImagen(ID, NombreImagen) {
     opacityDest: 1,
     opacitySource: 1
   })
-  ImagenBase.print(Fuente, 20, 300, "Fecha: " + FechaActual());
+  ImagenBase.print(Fuente, 20, 300, "Fecha: " + Ultimo['Fecha']);
 
   await ImagenBase.writeAsync(NombreImagen);
 
   bot.sendPhoto(ID, NombreImagen, {
-    caption: "Configurado por: {Nombre} a la fecha: {Fecha}"
+    caption: "Arbol configurado por " + Ultimo['Nombre'] + " a " + Ultimo['Fecha']
   });
 }
 
