@@ -204,7 +204,6 @@ function CambiarColor(ID, Mensaje) {
 
 function MensajeMatrix(colores) {
   MiPuerto.write("matris/reiniciar*");
-  // console.log(colores)
   for (var i = 0; i < colores.length; i++) {
     MiPuerto.write("matris/" + colores[i] + "*");
   }

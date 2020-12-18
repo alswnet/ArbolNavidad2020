@@ -8,8 +8,8 @@
 #define LED_COUNT 124
 
 int CantidadMatris = 0;
-int CantidadMatrisMaxima = 2;
-uint32_t MatrisColores[10];
+int CantidadMatrisMaxima = 124;
+uint32_t MatrisColores[124];
 
 Adafruit_NeoPixel TiraNeoPixel(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 
@@ -41,11 +41,11 @@ void DecodificarSerial() {
   String Dato = Mensaje.substring(0, PosicionPleca);
   String Valor = Mensaje.substring(PosicionPleca + 1, PosicionSaltoLinea);
 
-//  Serial.print("Dato:");
-//  Serial.print(Dato);
-//  Serial.print(" Valor:");
-//  Serial.print(Valor);
-//  Serial.println("*");
+  //  Serial.print("Dato:");
+  //  Serial.print(Dato);
+  //  Serial.print(" Valor:");
+  //  Serial.print(Valor);
+  //  Serial.println("*");
 
   if (Dato.equals("color")) {
     uint32_t ColorFull = QueColorEs(Valor);
@@ -96,16 +96,20 @@ uint32_t QueColorEs(String TextoColor) {
     return TiraNeoPixel.Color(0,   255,  0);
   } else if (TextoColor.equals("blanco")) {
     return TiraNeoPixel.Color(200,   200,  200);
+  } else if (TextoColor.equals("nada")) {
+    return TiraNeoPixel.Color(0,   0,  0);
   } else {
     Serial.println("No color");
   }
-
 }
 
 void MatrisColor() {
   int color = 0;
+  TiraNeoPixel.clear();
   for (int i = 0; i < TiraNeoPixel.numPixels(); i++) {
-    TiraNeoPixel.setPixelColor(i, MatrisColores[color]);
+    if (MatrisColores[color] != TiraNeoPixel.Color(0,   0,  0)) {
+      TiraNeoPixel.setPixelColor(i, MatrisColores[color]);
+    }
     color++;
     if (color >= CantidadMatris) {
       color = 0;
@@ -115,10 +119,15 @@ void MatrisColor() {
 }
 
 void FullColor(uint32_t color, int wait) {
-  for (int i = 0; i < TiraNeoPixel.numPixels(); i++) {
-    TiraNeoPixel.setPixelColor(i, color);
+  if (color == TiraNeoPixel.Color(0,   0,  0)) {
+    TiraNeoPixel.clear();
     TiraNeoPixel.show();
-    delay(wait);
+  } else {
+    for (int i = 0; i < TiraNeoPixel.numPixels(); i++) {
+      TiraNeoPixel.setPixelColor(i, color);
+      TiraNeoPixel.show();
+      delay(wait);
+    }
   }
 }
 
