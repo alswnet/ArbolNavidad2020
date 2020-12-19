@@ -309,9 +309,9 @@ function FechaActual() {
 function MensajeEstado(ID) {
   let Ultimo = fs.readFileSync('Data/Ultimo.json');
   Ultimo = JSON.parse(Ultimo);
-  var Mensaje = "Ultima configuracion por " + Ultimo['Nombre'] + " :\n";
-  Mensaje += "Hora y Fecha: " + Ultimo['Fecha'] + " :\n";
-  Mensaje += "Mensaje: " + Ultimo['mensaje'] + " :\n";
+  var Mensaje = "Ultima configuracion por: " + Ultimo['Nombre'] + "\n";
+  Mensaje += "Hora y Fecha: " + Ultimo['Fecha'] + "\n";
+  Mensaje += "Mensaje: " + Ultimo['mensaje'] + "\n";
   Mensaje += "Puede tomarle foto con /foto";
   bot.sendMessage(ID, Mensaje, {
     parse_mode: "Markdown"
