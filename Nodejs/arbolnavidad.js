@@ -46,9 +46,17 @@ bot.on('message', (msg) => {
   if (msg.from.is_bot) {
     console.log("Es un Bot");
   } else {
-    SalvarChat(msg);
+    // SalvarChat(msg);
     var chatId = msg.chat.id;
     var Mensaje = msg.text.toLowerCase();
+
+    if (chatId == Contastes.chatidadmin) {
+      if (EstaTexto(Mensaje, "depuracion") || Mensaje == "/\depuracion") {
+        console.log("Cambiando modo depuracion");
+        MensajeDepuracion();
+      }
+    }
+
     if (EstaTexto(Mensaje, "foto") || Mensaje == "/\foto") {
       console.log("Preperando tomar foto");
       MensajeFoto(chatId, msg.date);
@@ -335,6 +343,14 @@ function MensajeAyuda(ID) {
   Mensaje += "/error Pedir sitio web para reportar errores\n"
   Mensaje += "/ayuda  Para pedir ayuda de los comandos\n";
 
+  bot.sendMessage(ID, Mensaje, {
+    parse_mode: "Markdown"
+  });
+}
+
+
+function MensajeDepuracion() {
+  var Mensaje = "Se Cambio estado ";
   bot.sendMessage(ID, Mensaje, {
     parse_mode: "Markdown"
   });
